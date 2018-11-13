@@ -25,4 +25,14 @@ after do
 end
 
 class User < ActiveRecord::Base
+  enum role: {
+    normal:   0,
+    admin:    1
+  }
+  has_many :user_tokens
+  has_secure_password
+end
+
+class UserToken < ActiveRecord::Base
+  belongs_to :user
 end
