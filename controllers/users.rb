@@ -1,5 +1,6 @@
 post '/login' do
   params = JSON.parse(request.body.read)
+  p params
   if params['username'] && params['password']
     user = User.find_by(username: params['username'])
     if user && user.authenticate(params['password'])
@@ -23,22 +24,27 @@ end
 post '/sign_up' do
   params = JSON.parse(request.body.read)
   if params['username'] && params['password']
-    new_user = User.new(
-      username: params['username'],
-      password: params['password'],
-      password_confirmation: params['password']
-    )
-    if new_user.save
-      token = UserToken.create(
-        user_id: new_user.id,
-        uuid: SecureRandom.uuid,
-        expiration_time: Time.zone.now.since(1.hours)
+    if User.find_by(username: params['username'])
+      new_user = User.new(
+        username: params['username'],
+        password: params['password'],
+        password_confirmation: params['password']
       )
-      status 201
-      { user: new_user, token: token.uuid }.to_json
+      if new_user.save
+        token = UserToken.create(
+          user_id: new_user.id,
+          uuid: SecureRandom.uuid,
+          expiration_time: Time.zone.now.since(1.hours)
+        )
+        status 201
+        { user: new_user, token: token.uuid }.to_json
+      else
+        body '新規ユーザーの作成に失敗しました'
+        status 500
+      end
     else
-      body '新規ユーザーの作成に失敗しました'
-      status 500
+      body '既に同じユーザー名が存在します'
+      status 409
     end
   else
     body '指定されたKeyが存在しません'
