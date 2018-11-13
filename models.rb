@@ -30,7 +30,20 @@ class User < ActiveRecord::Base
     admin:    1
   }
   has_many :user_tokens
+  has_many :user_rooms
+  has_many :rooms, :through => :user_rooms
   has_secure_password
+end
+
+class Room < ActiveRecord::Base
+  has_many :user_rooms
+  has_many :users, :through => :user_rooms
+  has_secure_password
+end
+
+class UserRoom < ActiveRecord::Base
+  belongs_to :user
+  belongs_to :room
 end
 
 class UserToken < ActiveRecord::Base

@@ -24,7 +24,7 @@ end
 post '/sign_up' do
   params = JSON.parse(request.body.read)
   if params['username'] && params['password']
-    if User.find_by(username: params['username'])
+    if !User.find_by(username: params['username'])
       new_user = User.new(
         username: params['username'],
         password: params['password'],
