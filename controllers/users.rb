@@ -56,8 +56,10 @@ post '/verification' do
   params = JSON.parse(request.body.read)
   token = UserToken.find_by(uuid: params['token'])
   if token && token.user && Time.zone.now < token.expiration_time
+    body '有効なTOKENを認証'
     status 200
   else
+    body '無効なTOKEN'
     status 400
   end
 end
