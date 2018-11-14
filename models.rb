@@ -36,12 +36,18 @@ class User < ActiveRecord::Base
 end
 
 class Room < ActiveRecord::Base
+  enum status: {
+    wait:       0,
+    playing:    1,
+    end_game:   2
+  }
   has_many :user_rooms
   has_many :users, :through => :user_rooms
   has_secure_password
 end
 
 class UserRoom < ActiveRecord::Base
+  scope :already_joined, -> (user_id){ where(user_id: user_id) }
   belongs_to :user
   belongs_to :room
 end
